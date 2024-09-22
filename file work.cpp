@@ -36,17 +36,14 @@ int main(int argc, char** argv)
 
     // перенос данных    
     for (std::string line; std::getline(input, line); )
-    {
-        for (int i = minProgrammArgsCount - 1; i < argc; ++i)
-        {
-            output << line << std::endl;
-        }
+    {      
+        output << line << std::endl;   
     }
 }
 
 void Help(const char* programName)
 {
-    std::cout << "Usage: " << programName << " SOURCE FILENAME DESTINATION FILENAME \n"
-        "SOURCE FILENAME - the path to the file to copy data their \n"
-        "DESTINATION FILENAME - the path to the file to put data from the SOURCE FILENAME" << std::endl;
+    std::cout << "Usage: " << programName << " <SOURCE_FILENAME> <DESTINATION_FILENAME> \n"
+        "<SOURCE_FILENAME> - the path to the file to copy data their \n"
+        "<DESTINATION_FILENAME> - the path to the file to put data from the SOURCE FILENAME" << std::endl;
 }
