@@ -36,10 +36,16 @@ int main(int argc, char** argv)
         std::cerr << "Failed to open destination file " << argv[2] << std::endl;
         return 1;
     }
-
+    int num = 0;
     // перенос данных и отзеркаливание   
     for (std::string line; std::getline(input, line); )
     {
+        if (num <= 2) 
+        {
+            ++num;
+            output << line << std::endl;
+            continue;
+        }
         output << Flip_line(line) << std::endl;
     }
 }
@@ -53,19 +59,11 @@ void Help(const char* programName)
 
 std::string Flip_line(const std::string line)
 {
-    std::string buffer;
-    
-    if (line[0] == '0' || '1')
+    std::string buffer;  
+    for (int i = 0; i < line.size(); ++i)
     {
-        for (int i = 0; i < line.size(); ++i)
-        {
-
-            buffer += line[line.size() - i];
-        }
-        return buffer;
+        buffer += line[line.size() - i];
     }
-    else
-    {
-        return line;
-    }
+    return buffer;
 }
+
