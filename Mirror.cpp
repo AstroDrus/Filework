@@ -3,19 +3,27 @@
 #include <string>
 
 void Help(const char* programName);
-std::string Flip_line(const std::string line);
+bool CheckFormat(char* SourceFile);
+std::string FlipLine(const std::string& line);
 
 
 int main(int argc, char** argv)
 {
     const int minProgrammArgsCount = 3;
-    int num_line = 1;
     if (argc != minProgrammArgsCount)
     {
         std::cerr << "Incorrect using!\n";
         Help(argv[0]);
         return 1;
     }
+
+    if (!CheckFormat(argv[1])) 
+    {
+        std::cerr << "Incorrect using!\n";
+        Help(argv[0]);
+        return 1;
+    }
+    
 
     // Получить имя файла из аргументов
     const std::string source_file_name(argv[1]);
@@ -46,18 +54,26 @@ int main(int argc, char** argv)
             output << line << std::endl;
             continue;
         }
-        output << Flip_line(line) << std::endl;
+        output << FlipLine(line) << std::endl;
     }
 }
 
 void Help(const char* programName)
 {
-    std::cout << "Usage: " << programName << " <SOURCE_FILENAME> <DESTINATION_FILENAME> \n"
-        "<SOURCE_FILENAME> - the path to the file to copy data their \n"
-        "<DESTINATION_FILENAME> - the path to the file to put data from the SOURCE FILENAME" << std::endl;
+    std::cout << "Usage: " << programName << " <SOURCE_FILENAME.bmp> <DESTINATION_FILENAME.bmp> \n"
+        "<SOURCE_FILENAME.bmp> - the path to the file to copy data their \n"
+        "<DESTINATION_FILENAME.bmp> - the path to the file to put data from the SOURCE_FILENAME.bmp" << std::endl;
 }
 
-std::string Flip_line(const std::string line)
+bool CheckFormat(char* SourceFile) 
+{
+    // here must be realization
+        
+}
+
+
+
+std::string FlipLine(const std::string& line)
 {
     std::string buffer;  
     for (int i = 0; i < line.size(); ++i)
@@ -66,4 +82,3 @@ std::string Flip_line(const std::string line)
     }
     return buffer;
 }
-
