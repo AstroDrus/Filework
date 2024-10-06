@@ -4,49 +4,85 @@
 
 class Task
 {
-    public:
-    virtual void Exec(int argc, char** argv) = 0;
+public:
+    virtual ~Task() = default;
+    virtual void Exec() = 0;
 };
 
 class Copy : public Task
 {
-    public:
-    void Exec(int argc, char** argv) override;
+public:
+    Copy( const char* path2source, const char* path2dest );
+    
+public:
+    void Exec() override;
+
+private:
+    const char* path2source_;
+    const char* path2dest_;
 };
 
 class VerticalMirror : public Task
 {
     public:
-    void Exec(int argc, char** argv) override;
+    VerticalMirror( const char* path2source, const char* path2dest );
+
+    public:
+    void Exec() override;
+
+    private:
+    const char* path2source_;
+    const char* path2dest_;
 };
 
 class HorizontalMirror : public Task
 {
     public:
-    void Exec(int argc, char** argv) override;
+    HorizontalMirror( const char* path2source, const char* path2dest );
+    
+    public:
+    void Exec() override;
+       
+    private:
+    const char* path2source_;
+    const char* path2dest_;
 };
 
 class Rotate : public Task
 {
     public:
-    void Exec(int argc, char** argv) override;
+    Rotate( const char* path2source, const char* path2dest );
+
+    public:
+    void Exec() override;
+
+    private:
+    const char* path2source_;
+    const char* path2dest_;
 };
 
 class ErrorUsage : public Task
 {
     public:
-    void Exec(int argc, char** argv) override;
+    ErrorUsage( const char* programname );
+
+    public:
+    void Exec() override;
+
+    private:
+    const char* programname_;
 };
 
 class Help : public Task
 {
     public:
-    void Exec(int argc, char** argv) override;
+    void Exec() override;
 };
 
 
-Task* MakeTask( int argc, char** argv);
+std::unique_ptr<Task> MakeTask( int argc, char** argv);
 bool CheckFormat(char* SourceFile);
+bool CheckExpansion(char* SourceFile);
 std::string FlipLine(const std::string& line);
 
 
@@ -56,146 +92,168 @@ int main(int argc, char** argv)
     if (argc != minProgrammArgsCount)
     {
         std::cerr << "Incorrect using!\n";
-        ErrorUsage Error;
-        Error.Exec(argc, argv);
-        return 1;
-    }
-
-    if (!CheckFormat(argv[1])) 
-    {
-        std::cerr << "Incorrect using!\n";
-        ErrorUsage Error;
-        Error.Exec(argc, argv);
+        std::make_unique<ErrorUsage>(argv[0]);
         return 1;
     }
     
-    Task* task = MakeTask( argc, argv );
-    task->Exec(argc, argv);
-    delete task;
+    std::unique_ptr<Task> task = MakeTask( argc, argv );
+    task->Exec();
 
 }
 
-bool CheckFormat(char* SourceFile) 
+bool CheckFormat(char* SourceFile)
 {
-    // here must be realization
-    return 1;
-        
+/*
+todo провекра файла-источника правильно ли устроены его внутренности
+P1
+4 4
+# comment
+0 0 0 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
+*/
+return false;
 }
 
-Task* MakeTask( int argc, char** argv ) // return Task from new
+bool CheckExpansion(const std::string sourcefile) 
+{
+    const std::string expectedExtension = ".bmp";
+    auto idxLastExtOccur = sourcefile.rfind( expectedExtension );
+    if (idxLastExtOccur == std::string::npos)
+    {
+        return false;
+    }
+    return ( sourcefile.size() - idxLastExtOccur ) == expectedExtension.size(); 
+}
+
+std::unique_ptr<Task> MakeTask( int argc, char** argv )
 {
     // Проверить, что вообще есть что-то, кроме имени программы
     if (argc < 2 || argc > 4)
     {
-        return new ErrorUsage;
+        return std::make_unique<ErrorUsage>(argv[0]);
     }
     
     std::string firstOpt = argv[1];
     if (firstOpt[0] == '-')
-    {
-        switch (firstOpt[1])
+    {    
+        if (!CheckExpansion(argv[2]) || !CheckFormat(argv[2])) 
         {
-            case 'h':
-                return new Help;
-                break;
-                
-            case 'v':
-                return ( 4 == argc ) ? new VerticalMirror : new ErrorUsage;
-                break;
-                
-            case 'g':
-                return ( 4 == argc ) ? new HorizontalMirror : new ErrorUsage;
-                break;
-                
-            case 'r':
-                return ( 4 == argc ) ? new Rotate : new ErrorUsage;
-                break;
-                
-            default:
-                return new ErrorUsage;
-                break;
+            std::cerr << "Incorrect using!\n";
+            return std::make_unique<ErrorUsage>(argv[0]);
         }
-        
+
+        if (firstOpt[1] == 'h')
+        {
+            return std::make_unique<Help>();
+        }
+        else if( 4 != argc )
+        {
+            return std::make_unique<ErrorUsage>(argv[0]);
+        }
+        else 
+        {
+            switch (firstOpt[1])
+            {
+                case 'v':
+                    return std::make_unique<VerticalMirror>(argv[2], argv[3]);
+                    break;
+                    
+                case 'g':
+                    return std::make_unique<HorizontalMirror>(argv[2], argv[3]);
+                    break;
+                    
+                case 'r':
+                    return std::make_unique<Rotate>(argv[2], argv[3]);
+                    break;
+                
+                case 'c':
+                    return std::make_unique<Copy>(argv[2], argv[3]);
+                    break;
+                    
+                default:
+                    return std::make_unique<ErrorUsage>(argv[0]);
+                    break;
+            }
+        }
     }
     else
     {
         if (argc == 3)
         {
-            return new Copy;
+            return std::make_unique<Copy>( argv[1], argv[2] );
+        }
+        else 
+        {
+            return std::make_unique<ErrorUsage>(argv[0]);
         }
     }
     
 }
 
-std::string FlipLine(const std::string& line)
-{
-    std::string buffer;  
-    for (int i = 0; i < line.size(); ++i)
-    {
-        buffer += line[line.size() - i];
-    }
-    return buffer;
-}
+Copy::Copy(const char* path2source, const char* path2dest) :
+    path2source_(path2source),
+    path2dest_(path2dest)
+{}
 
-std::ifstream OpenSourceFile(int argc,char** argv)
-{
-// Получить имя файла из аргументов
-    const std::string source_file_name(argv[1]);
+VerticalMirror:: VerticalMirror(const char* path2source, const char* path2dest) :
+    path2source_(path2source),
+    path2dest_(path2dest)
+{}
 
-    // Открыть файл для чтения - ifstream
-    std::ifstream input;
-    input.open(source_file_name);
+HorizontalMirror::HorizontalMirror(const char* path2source, const char* path2dest) :
+    path2source_(path2source),
+    path2dest_(path2dest)
+{}
+
+Rotate::Rotate(const char* path2source, const char* path2dest) :
+    path2source_(path2source),
+    path2dest_(path2dest)
+{}
+
+ErrorUsage::ErrorUsage(const char* programname) :
+    programname_(programname)
+{}
+
+void Copy::Exec()
+{
+    std::ifstream input( path2source_ );
     if (!input.is_open())
     {
         std::cerr << "Incorrect source file name!\n";
-        ErrorUsage Error;
-        Error.Exec(argc, argv);
-        return; // todo
+        return;
     }
-    return input;
-}
-
-std::ofstream OpenDestFile(int argc,char** argv)
-{    // Открыть файл для записи - ofstream 
-    std::ofstream output(argv[2], std::ios_base::app); // open
-    if (!output.is_open())
-    {
-        std::cerr << "Failed to open destination file " << argv[2] << std::endl;
-        ErrorUsage Error;
-        Error.Exec(argc, argv);
-    }
-    return output;
-}
-
-
-
-void Copy::Exec(int argc, char** argv)
-{
-    std::ifstream input = OpenSourceFile(argc, argv);
-    std::ofstream output = OpenDestFile(argc, argv);
     
-    // Открыть файл для записи - ofstream
-    std::ofstream output(argv[2], std::ios_base::app); // open
+    std::ofstream output(path2dest_, std::ios_base::app);
     if (!output.is_open())
     {
-        std::cerr << "Failed to open destination file " << argv[2] << std::endl;
-        ErrorUsage Error;
-        Error.Exec(argc, argv);
+        std::cerr << "Incorrect dest file name!\n";
+        return;
     }
-
+    
     // перенос данных
     for (std::string line; std::getline(input, line); )
     {
         output << line << std::endl;
     }
 }
-    
-
-    
-void VerticalMirror::Exec(int argc, char** argv)
+  
+void VerticalMirror::Exec()
 {
-    std::ifstream input = OpenSourceFile(argc, argv);
-    std::ofstream output = OpenDestFile(argc, argv);
+    std::ifstream input( path2source_ );
+    if (!input.is_open())
+    {
+        std::cerr << "Incorrect source file name!\n";
+        return;
+    }
+    
+    std::ofstream output(path2dest_, std::ios_base::app);
+    if (!output.is_open())
+    {
+        std::cerr << "Incorrect dest file name!\n";
+        return;
+    }
 
     int num = 0;
     // перенос данных и отзеркаливание   
@@ -207,37 +265,58 @@ void VerticalMirror::Exec(int argc, char** argv)
             output << line << std::endl;
             continue;
         }
-        output << FlipLine(line) << std::endl;
+        std::string reverseline (line.rbegin(), line.rend());
+        output << reverseline << std::endl;
     }
 }
 
-
-
-void HorizontalMirror::Exec(int argc, char** argv)
+void HorizontalMirror::Exec()
 {
-    std::ifstream input = OpenSourceFile(argc, argv);
-    std::ofstream output = OpenDestFile(argc, argv);
+    std::ifstream input( path2source_ );
+    if (!input.is_open())
+    {
+        std::cerr << "Incorrect source file name!\n";
+        return;
+    }
+    
+    std::ofstream output(path2dest_, std::ios_base::app);
+    if (!output.is_open())
+    {
+        std::cerr << "Incorrect dest file name!\n";
+        return;
+    }
+    // todo доделать реализацию
+}
+
+void Rotate::Exec()
+{
+    std::ifstream input( path2source_ );
+    if (!input.is_open())
+    {
+        std::cerr << "Incorrect source file name!\n";
+        return;
+    }
+    
+    std::ofstream output(path2dest_, std::ios_base::app);
+    if (!output.is_open())
+    {
+        std::cerr << "Incorrect dest file name!\n";
+        return;
+    }
+    // todo доделать реализацию
 }
 
 
 
-void Rotate::Exec(int argc, char** argv)
+void ErrorUsage::Exec()
 {
-    std::ifstream input = OpenSourceFile(argc, argv);
-    std::ofstream output = OpenDestFile(argc, argv);
-}
-
-
-
-void ErrorUsage::Exec(int argc, char** argv)
-{
-    std::cout << "Usage: " << argv[0] << " <SOURCE_FILENAME.bmp> <DESTINATION_FILENAME.bmp> \n"
+    std::cout << "Usage: " << programname_ << " <SOURCE_FILENAME.bmp> <DESTINATION_FILENAME.bmp> \n"
     "<SOURCE_FILENAME.bmp> - the path to the file to copy data their \n"
     "<DESTINATION_FILENAME.bmp> - the path to the file to put data from the SOURCE_FILENAME.bmp" << std::endl;
 
 }
 
-void Help::Exec(int argc, char** argv)
+void Help::Exec()
 {
     std::cout <<  "1) Просто скопировать           - ./bmp_worker src.bmp dst.bmp" << std::endl;
     std::cout <<  "2) Посмотреть справку           - ./bmp_worker -h" << std::endl;
@@ -246,3 +325,4 @@ void Help::Exec(int argc, char** argv)
     std::cout <<  "5) Повернуть на 90 град         - ./bmp_worker -r src.bmp dst.bmp" << std::endl;
     std::cout <<   "./program [option] [src file] [dst file]" << std::endl;
 }
+
