@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <vector>
 
 class Task
 {
@@ -103,17 +104,33 @@ int main(int argc, char** argv)
 
 bool CheckFormat(char* SourceFile)
 {
-/*
-todo провекра файла-источника правильно ли устроены его внутренности
-P1
-4 4
-# comment
-0 0 0 0
-0 0 0 0
-0 0 0 0
-0 0 0 0
-*/
-return false;
+    const unsigned BMPmaxsize = 65535;
+    std::ifstream input( SourceFile );
+    if (!input.is_open())
+    {
+        std::cerr << "Incorrect source file name!\n";
+        return false;
+    }
+    for (std::string line, int i = 0; std::getline(input, line); ++i )
+    {
+        if (line[0] == '#')
+        {
+           --i;
+           continue; 
+        }
+        else if (i == 0 && line == "P1")
+        {
+            continue;
+        } 
+        else if (i == 1 && int(line[0]) <= BMPmaxsize && line[1] == ' ' && int(line[2]) <= BMPmaxsize)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
 
 bool CheckExpansion(const std::string sourcefile) 
@@ -261,9 +278,17 @@ void VerticalMirror::Exec()
     {
         if (num <= 2) 
         {
+            if (line[0] == '#')
+            {
+                --num;
+                continue;
+            }
+            else 
+            {
             ++num;
             output << line << std::endl;
             continue;
+            }
         }
         std::string reverseline (line.rbegin(), line.rend());
         output << reverseline << std::endl;
@@ -285,7 +310,50 @@ void HorizontalMirror::Exec()
         std::cerr << "Incorrect dest file name!\n";
         return;
     }
-    // todo доделать реализацию
+
+    int cols = 0;
+    
+    for (std::string line; std::getline(input, line); )
+    {
+        if (line[0] == '#' || line == "P1")
+        {
+            continue;
+        }
+        else 
+        {
+        cols << int(line[0]);
+        break;
+        }
+    }
+    std::vector <std::string> picture;
+    int num = 0;
+// добавлем в вектор строки
+    for (std::string line; std::getline(input, line); )
+    {
+        if (num <= 2) 
+        {
+            if (line[0] == '#')
+            {
+                --num;
+                continue;
+            }
+            else 
+            {
+            ++num;
+            output << line << std::endl;
+            continue;
+            }
+        }
+        std::string str (line.begin(), line.end());
+        // меняем строки местами и вставляем их в вектор
+        picture.insert(picture.begin(), str);  
+    }
+
+// вектор передаем в файл
+     for (int i = 0; i < cols; ++i)
+    {
+        output << picture[i] << std::endl;
+    } 
 }
 
 void Rotate::Exec()
@@ -325,4 +393,3 @@ void Help::Exec()
     std::cout <<  "5) Повернуть на 90 град         - ./bmp_worker -r src.bmp dst.bmp" << std::endl;
     std::cout <<   "./program [option] [src file] [dst file]" << std::endl;
 }
-
