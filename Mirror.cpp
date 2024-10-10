@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 class Task
 {
@@ -85,6 +86,7 @@ std::unique_ptr<Task> MakeTask( int argc, char** argv);
 bool CheckFormat(char* SourceFile);
 bool CheckExpansion(char* SourceFile);
 std::string FlipLine(const std::string& line);
+std::map <int, int> FindSize(const std::string& line);
 
 
 int main(int argc, char** argv)
@@ -295,6 +297,15 @@ void VerticalMirror::Exec()
     }
 }
 
+// находим количество строк и столбоцв в файле
+std::map <int, int> FindSize(const std::string& line)
+{
+    std::map <int, int> result;
+    result[0] << int(line[0]);
+    result[1] <<int(line[1]);
+    return result;
+}
+
 void HorizontalMirror::Exec()
 {
     std::ifstream input( path2source_ );
@@ -321,7 +332,7 @@ void HorizontalMirror::Exec()
         }
         else 
         {
-        cols << int(line[0]);
+        cols = FindSize(line)[0];
         break;
         }
     }
@@ -371,8 +382,53 @@ void Rotate::Exec()
         std::cerr << "Incorrect dest file name!\n";
         return;
     }
-    // todo доделать реализацию
+    std::vector <std::vector<std::string>> Mtxofpicture;    
+    int colsize = 0;
+    int rowsize = 0;
+
+    for (std::string line; std::getline(input, line); )
+    {
+        if (line[0] == '#' || line == "P1")
+        {
+            continue;
+        }
+        else 
+        {
+        colsize = FindSize(line)[0];
+        rowsize = FindSize(line)[1];
+        break;
+        }
+    }
+    
+    for (int cols = 0; cols < colsize; ++cols)
+    {
+        for (int rows = 0; rows < rowsize; ++rows)
+        {                    
+            for (std::string line; std::getline(input, line); )
+            {
+            if (line[0] == '#' || line == "P1")
+            {
+            continue;
+            }
+            else 
+            {
+            for ( int i = 0; line[i] != '\n'; ++i ) 
+            {
+                if (line[i] == '0' || line [i] == '1')
+                {
+                    Mtxofpicture[cols][rows] = line[i];
+                    break;
+                }
+            }
+            }
+            }
+        }
+    }
+
+
+    
 }
+
 
 
 
