@@ -367,7 +367,7 @@ void HorizontalMirror::Exec()
     } 
 }
 
-void Rotate::Exec()
+void Rotate::Exec() // картинка должна быть квадратной
 {
     std::ifstream input( path2source_ );
     if (!input.is_open())
@@ -385,6 +385,7 @@ void Rotate::Exec()
     std::vector <std::vector<std::string>> Mtxofpicture;    
     int colsize = 0;
     int rowsize = 0;
+    
 
     for (std::string line; std::getline(input, line); )
     {
@@ -398,6 +399,12 @@ void Rotate::Exec()
         rowsize = FindSize(line)[1];
         break;
         }
+    }
+    
+    if (colsize != rowsize)
+    {
+        std::cerr << "Incorrect picture size!\n";
+        return;   
     }
     
     for (int cols = 0; cols < colsize; ++cols)
@@ -424,9 +431,26 @@ void Rotate::Exec()
             }
         }
     }
-
-
+    // переворачиваем на 90 градусов вправо
+    std::vector <std::vector<std::string>> reverseMtxofpicture;
     
+    for (int cols = 0; cols < colsize; ++cols)
+    {
+        for (int rows = 0; rows < rowsize; ++rows)
+        {       
+        reverseMtxofpicture[rows][cols] = Mtxofpicture[cols][colsize-rows+1];
+        }
+    }
+
+    // передаем вектор в файл
+    for (int cols = 0; cols < colsize; ++cols)
+    {
+        for (int rows = 0; rows < rowsize; ++rows)
+        {   
+        output << reverseMtxofpicture[rows][cols];
+        }    
+        output << std::endl;  
+    }  
 }
 
 
