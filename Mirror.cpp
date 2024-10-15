@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 
 class Task
 {
@@ -83,12 +84,11 @@ public:
 
 std::unique_ptr<Task> MakeTask(int argc, char** argv);
 bool CheckFormat(char* SourceFile);
-bool CheckExpansion(char* SourceFile);
+bool CheckExpansion(const char* SourceFile);
 
 int main(int argc, char** argv)
 {
-    const int minProgrammArgsCount = 3;
-    if (argc != minProgrammArgsCount)
+    if (argc < 2 || argc > 4)
     {
         std::cerr << "Incorrect using!\n";
         std::make_unique<ErrorUsage>(argv[0]);
@@ -109,46 +109,85 @@ bool CheckFormat(char* SourceFile)
         std::cerr << "Incorrect source file name!\n";
         return false;
     }
-    int i = 0;
-    for (std::string line; std::getline(input, line);)
+
+    std::string firstnum;
+    std::string secondnum;
+    bool flag = 0;
+    
+    int checkparametrs = 0;
+    int checkhelper = 0;
+
+    for (std::string line; std::getline(input, line); ++checkhelper)
     {
-        ++i;
+
+        if (checkhelper == 1 &&flag == 0)
+        {
+            for (int i = 0; i < line.size(); ++i)
+            {
+                if (line[i] == ' ')
+                {
+                    flag = true;
+                }
+                else if (flag == 0)
+                {
+                    firstnum += line[i];
+                }
+                else if (flag == 1)
+                {
+                    secondnum += line[i];
+                }
+                else 
+                {
+                    return false;
+                }
+            }
+        }
+       
         if (line[0] == '#')
         {
-            --i;
-            continue;
+            --checkhelper;
         }
-        else if (i == 0 && line == "P1")
+        else if (checkhelper == 0 && line == "P1")
         {
-            continue;
+            ++checkparametrs;
         }
-        else if (i == 1 && int(line[0]) <= BMPmaxsize && line[1] == ' ' && int(line[2]) <= BMPmaxsize)
-        {
-            return true;
+        else if (checkhelper == 1 && stoi(firstnum) <= BMPmaxsize && stoi(secondnum) <= BMPmaxsize)
+        {           
+            ++checkparametrs;
+            break;
         }
         else
         {
             return false;
         }
     }
-    return false;
+
+    if (checkparametrs == 2) 
+    {
+        return true;
+    }
+    else 
+    {
+        return false;
+    }
+    
 }
 
-bool CheckExpansion(const char* sourcefile)
+bool CheckExpansion(const char* SourceFile)
 {
     const std::string expectedExtension = ".bmp";
-    auto idxLastExtOccur = std::string(sourcefile).rfind(expectedExtension);
+    auto idxLastExtOccur = std::string(SourceFile).rfind(expectedExtension);
     if (idxLastExtOccur == std::string::npos)
     {
         return false;
     }
-    return (std::string(sourcefile).size() - idxLastExtOccur) == expectedExtension.size();
+    return (std::string(SourceFile).size() - idxLastExtOccur) == expectedExtension.size();
 }
 
 std::unique_ptr<Task> MakeTask(int argc, char** argv)
 {
     // Проверить, что вообще есть что-то, кроме имени программы
-    if (argc < 2 || argc > 4)
+    if (argc <= 2 || argc > 4)
     {
         return std::make_unique<ErrorUsage>(argv[0]);
     }
@@ -165,10 +204,6 @@ std::unique_ptr<Task> MakeTask(int argc, char** argv)
         if (firstOpt[1] == 'h')
         {
             return std::make_unique<Help>();
-        }
-        else if (4 != argc)
-        {
-            return std::make_unique<ErrorUsage>(argv[0]);
         }
         else
         {
@@ -277,22 +312,16 @@ void VerticalMirror::Exec()
     // перенос данных и отзеркаливание   
     for (std::string line; std::getline(input, line); )
     {
-        if (num <= 2)
+        if (num < 2 || line[0] == '#')
         {
-            if (line[0] == '#')
-            {
-                --num;
-                continue;
-            }
-            else
-            {
-                ++num;
-                output << line << std::endl;
-                continue;
-            }
+            ++num;
+            output << line << std::endl;
         }
-        std::string reverseline(line.rbegin(), line.rend());
-        output << reverseline << std::endl;
+        else
+        {
+            std::string reverseline(line.rbegin(), line.rend());
+            output << reverseline << std::endl;
+        }
     }
 }
 
