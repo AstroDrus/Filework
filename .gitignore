@@ -1,0 +1,5 @@
+CMakeCache.txt
+*.cmake
+CMakeFiles*/
+Makefile
+Mirror/Mirror
