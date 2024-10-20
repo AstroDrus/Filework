@@ -110,8 +110,8 @@ bool CheckFormat(char* SourceFile)
 		return false;
 	}
 
-	std::string firstnum;
-	std::string secondnum;
+	std::string colsnum;
+	std::string rowsnum;
 	bool flag = 0;
 
 	int checkparametrs = 0;
@@ -130,11 +130,11 @@ bool CheckFormat(char* SourceFile)
 				}
 				else if (flag == 0)
 				{
-					firstnum += line[i];
+					colsnum += line[i];
 				}
 				else if (flag == 1)
 				{
-					secondnum += line[i];
+					rowsnum += line[i];
 				}
 				else
 				{
@@ -151,7 +151,7 @@ bool CheckFormat(char* SourceFile)
 		{
 			++checkparametrs;
 		}
-		else if (checkhelper == 1 && stoi(firstnum) <= BMPmaxsize && stoi(secondnum) <= BMPmaxsize)
+		else if (checkhelper == 1 && stoi(colsnum) <= BMPmaxsize && stoi(rowsnum) <= BMPmaxsize)
 		{
 			++checkparametrs;
 			break;
@@ -175,7 +175,7 @@ bool CheckFormat(char* SourceFile)
 
 bool CheckExpansion(const char* SourceFile)
 {
-	const std::string expectedExtension = ".bmp";
+	const std::string expectedExtension = ".bpm";
 	auto idxLastExtOccur = std::string(SourceFile).rfind(expectedExtension);
 	if (idxLastExtOccur == std::string::npos)
 	{
@@ -327,7 +327,7 @@ void VerticalMirror::Exec()
 
 void HorizontalMirror::Exec()
 {
-	const unsigned BMPmaxsize = 65535;
+	const unsigned PBMmaxsize = 65535;
 	std::ifstream input(path2source_);
 	if (!input.is_open())
 	{
@@ -350,7 +350,7 @@ void HorizontalMirror::Exec()
 
 		if (line[0] != '#' && line != "P1" && num < 3)
 		{
-			for (int i = 0; i < BMPmaxsize; ++i)
+			for (int i = 0; i < PBMmaxsize; ++i)
 			{
 				if (line[i] == ' ')
 				{
@@ -381,7 +381,7 @@ void HorizontalMirror::Exec()
 
 void Rotate::Exec() // картинка должна быть квадратной
 {
-	const unsigned BMPmaxsize = 65535;
+	const unsigned PBMmaxsize = 65535;
 	std::ifstream input(path2source_);
 	if (!input.is_open())
 	{
@@ -396,7 +396,7 @@ void Rotate::Exec() // картинка должна быть квадратно
 		return;
 	}
 
-	std::vector <std::vector<std::string>> Mtxofpicture;
+	std::vector <std::vector<char>> Mtxofpicture;
 	std::string colsize;
 	std::string rowsize;
 	int num = 0;
@@ -411,7 +411,7 @@ void Rotate::Exec() // картинка должна быть квадратно
 		if (line[0] != '#' && line != "P1" && num < 3)
 		{
 			output << line << std::endl;
-			for (int i = 0; i < BMPmaxsize; ++i)
+			for (int i = 0; i < PBMmaxsize; ++i)
 			{
 				if (line[i] == ' ')
 				{
@@ -485,18 +485,18 @@ void Rotate::Exec() // картинка должна быть квадратно
 
 void ErrorUsage::Exec()
 {
-	std::cout << "Usage: " << programname_ << " <SOURCE_FILENAME.bmp> <DESTINATION_FILENAME.bmp> \n"
-		"<SOURCE_FILENAME.bmp> - the path to the file to copy data their \n"
-		"<DESTINATION_FILENAME.bmp> - the path to the file to put data from the SOURCE_FILENAME.bmp" << std::endl;
+	std::cout << "Usage: " << programname_ << " <SOURCE_FILENAME.pbm> <DESTINATION_FILENAME.pbm> \n"
+		"<SOURCE_FILENAME.pbm> - the path to the file to copy data their \n"
+		"<DESTINATION_FILENAME.pbm> - the path to the file to put data from the SOURCE_FILENAME.pbm" << std::endl;
 
 }
 
 void Help::Exec()
 {
-	std::cout << "1) Просто скопировать           - ./bmp_worker src.bmp dst.bmp" << std::endl;
-	std::cout << "2) Посмотреть справку           - ./bmp_worker -h" << std::endl;
-	std::cout << "3) Отобразить по вертикали      - ./bmp_worker -v src.bmp dst.bmp" << std::endl;
-	std::cout << "4) Отобразить по горизонтали    - ./bmp_worker -g src.bmp dst.bmp" << std::endl;
-	std::cout << "5) Повернуть на 90 град         - ./bmp_worker -r src.bmp dst.bmp" << std::endl;
+	std::cout << "1) Просто скопировать           - ./pbm_worker src.pbm dst.pbm" << std::endl;
+	std::cout << "2) Посмотреть справку           - ./pbm_worker -h" << std::endl;
+	std::cout << "3) Отобразить по вертикали      - ./pbm_worker -v src.bm dst.pbm" << std::endl;
+	std::cout << "4) Отобразить по горизонтали    - ./pbm_worker -g src.bm dst.pbm" << std::endl;
+	std::cout << "5) Повернуть на 90 град         - ./pbm_worker -r src.bm dst.pbm" << std::endl;
 	std::cout << "./program [option] [src file] [dst file]" << std::endl;
 }
