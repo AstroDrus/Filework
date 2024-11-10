@@ -20,13 +20,11 @@ bool IsSame( const std::string& lhv, const std::string& rhv )
         std::cerr << "The model-file of the tested programm dose not exist\n";
 		return false;
     }
-    
-    
-    /// @todo (perhaps) check first several lines "line by line" // (Two lines by the start they are the same)
-    
-    bool isSame{ true };
 
-    while( isSame )
+    bool isSame{ true };
+    bool isDone{ false };
+
+    while( isSame && !isDone )
     {
         const bool lhvEnded{ lhvStream.eof() };
         const bool rhvEnded{ rhvStream.eof() };
@@ -41,6 +39,10 @@ bool IsSame( const std::string& lhv, const std::string& rhv )
         else if( lhvEnded != rhvEnded )
         {
             isSame  = false;
+        }
+        else 
+        {
+            isDone = true;
         }
     }
     
