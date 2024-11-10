@@ -3,4 +3,5 @@ CMakeCache.txt
 CMakeFiles*/
 Makefile
 Mirror/Mirror
+Mirror/TestMirror
 .vscode
