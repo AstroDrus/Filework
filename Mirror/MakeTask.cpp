@@ -1,7 +1,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <map>
 #include <memory>
 #include <iostream>
 #include <string>
@@ -301,7 +300,7 @@ void Rotate::Exec() // картинка должна быть квадратно
 	std::string colsize;
 	std::string rowsize;
 	int counter = 0;
-	bool flag = 0;
+	bool flag_for_cols_and_rows = 0;
 	for (std::string line; std::getline(input, line); )
 	{
 		if (line[0] != '#')
@@ -315,9 +314,9 @@ void Rotate::Exec() // картинка должна быть квадратно
 			{
 				if (line[i] == ' ')
 				{
-					flag = 1;
+					flag_for_cols_and_rows = 1;
 				}
-				else if (flag == 0)
+				else if (flag_for_cols_and_rows == 0)
 				{
 					colsize.insert(colsize.end(), line[i]);
 				}
