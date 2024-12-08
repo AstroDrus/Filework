@@ -1,6 +1,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 #include <memory>
 #include <iostream>
 #include <string>
@@ -76,9 +77,14 @@ class Help : public Task
 public:
 	void Exec() override;
 };
+struct PbmSize
+{
+    int width = 0;
+    int heigth = 0;
+};
 
 
-
+bool open_files_cheker (const std::ifstream& input, const std::ofstream& output);
 
 std::unique_ptr<Task> MakeTask(int argc, char** argv)
 {
@@ -95,7 +101,6 @@ std::unique_ptr<Task> MakeTask(int argc, char** argv)
 		{
 			return std::make_unique<Help>();
 		}
-
 		if (!CheckExpansion(argv[2]) || !CheckFormat(argv[2]))
 		{
 			std::cerr << "Incorrect using!\n";
@@ -140,6 +145,20 @@ std::unique_ptr<Task> MakeTask(int argc, char** argv)
 	}
 }
 
+bool open_files_cheker (const std::ifstream& input, const std::ofstream& output)
+{
+	
+	if (!input.is_open())
+	{
+		throw "Incorrect source file name!\n";
+	}
+	if (!output.is_open())
+	{
+		throw "Incorrect dest file name!\n";
+	}
+
+	return 1;
+}
 
 Copy::Copy(const char* path2source, const char* path2dest) :
 	path2source_(path2source),
@@ -168,17 +187,14 @@ ErrorUsage::ErrorUsage(const char* programname) :
 void Copy::Exec()
 {
 	std::ifstream input(path2source_);
-	if (!input.is_open())
-	{
-		std::cerr << "Incorrect source file name!\n";
-		return;
-	}
-
 	std::ofstream output(path2dest_, std::ios_base::app);
-	if (!output.is_open())
+	try
 	{
-		std::cerr << "Incorrect dest file name!\n";
-		return;
+	if (!open_files_cheker(input, output));
+	}
+	catch(const std::string& error)
+	{
+		std::cerr << error;
 	}
 
 	// перенос данных
@@ -191,26 +207,23 @@ void Copy::Exec()
 void VerticalMirror::Exec()
 {
 	std::ifstream input(path2source_);
-	if (!input.is_open())
-	{
-		std::cerr << "Incorrect source file name!\n";
-		return;
-	}
-
 	std::ofstream output(path2dest_, std::ios_base::app);
-	if (!output.is_open())
+	try
 	{
-		std::cerr << "Incorrect dest file name!\n";
-		return;
+	if (!open_files_cheker(input, output));
+	}
+	catch(const std::string& error)
+	{
+		std::cerr << error;
 	}
 
-	int num = 0;
+	int counter = 0;
 	// перенос данных и отзеркаливание   
 	for (std::string line; std::getline(input, line); )
 	{
-		if (num < 2 || line[0] == '#')
+		if (counter < 2 || line[0] == '#')
 		{
-			++num;
+			++counter;
 			output << line << std::endl;
 		}
 		else
@@ -223,30 +236,26 @@ void VerticalMirror::Exec()
 
 void HorizontalMirror::Exec()
 {
-	const unsigned PBMmaxsize = 65535;
 	std::ifstream input(path2source_);
-	if (!input.is_open())
-	{
-		std::cerr << "Incorrect source file name!\n";
-		return;
-	}
-
 	std::ofstream output(path2dest_, std::ios_base::app);
-	if (!output.is_open())
+	try
 	{
-		std::cerr << "Incorrect dest file name!\n";
-		return;
+	if (!open_files_cheker(input, output));
+	}
+	catch(const std::string& error)
+	{
+		std::cerr << error;
 	}
 
 	std::vector <std::string> picture;
-	int num = 0;
+	int counter = 0;
 	std::string cols;
 	for (std::string line; std::getline(input, line); )
 	{
 
-		if (line[0] != '#' && line != "P1" && num < 3)
+		if (line[0] != '#' && line != "P1" && counter < 3)
 		{
-			for (int i = 0; i < PBMmaxsize; ++i)
+			for (int i = 0; i < PBMmaxsize_; ++i)
 			{
 				if (line[i] == ' ')
 				{
@@ -258,10 +267,10 @@ void HorizontalMirror::Exec()
 				}
 			}
 		}
-		if (num < 2 || line[0] == '#')
+		if (counter < 2 || line[0] == '#')
 		{
 			output << line << std::endl;
-			++num;
+			++counter;
 			continue;
 		}
 		std::string str(line.begin(), line.end());
@@ -277,37 +286,32 @@ void HorizontalMirror::Exec()
 
 void Rotate::Exec() // картинка должна быть квадратной
 {
-	const unsigned PBMmaxsize = 65535;
+	PbmSize size;
 	std::ifstream input(path2source_);
-	if (!input.is_open())
-	{
-		std::cerr << "Incorrect source file name!\n";
-		return;
-	}
-
 	std::ofstream output(path2dest_, std::ios_base::app);
-	if (!output.is_open())
+	try
 	{
-		std::cerr << "Incorrect dest file name!\n";
-		return;
+	if (!open_files_cheker(input, output));
 	}
-
+	catch(const std::string& error)
+	{
+		std::cerr << error;
+	}
 	std::vector <std::vector<char>> Mtxofpicture;
 	std::string colsize;
 	std::string rowsize;
-	int num = 0;
+	int counter = 0;
 	bool flag = 0;
-
 	for (std::string line; std::getline(input, line); )
 	{
 		if (line[0] != '#')
 		{
-			++num;
+			++counter;
 		}
-		if (line[0] != '#' && line != "P1" && num < 3)
+		if (line[0] != '#' && line != "P1" && counter < 3)
 		{
 			output << line << std::endl;
-			for (int i = 0; i < PBMmaxsize; ++i)
+			for (int i = 0; i < PBMmaxsize_; ++i)
 			{
 				if (line[i] == ' ')
 				{
@@ -331,7 +335,7 @@ void Rotate::Exec() // картинка должна быть квадратно
 				}
 			}
 		}
-		else if (num < 3)
+		else if (counter < 3)
 		{
 			output << line << std::endl;
 		}
@@ -357,12 +361,15 @@ void Rotate::Exec() // картинка должна быть квадратно
 		}
 	}
 
+    size.width = stoi(colsize);
+    size.heigth = stoi(rowsize);
+
 	// переворачиваем на 90 градусов вправо
 	std::vector <std::vector<std::string>> reverseMtxofpicture;
 
-	for (int cols = 0; cols < stoi(colsize); ++cols)
+	for (int cols = 0; cols < size.width; ++cols)
 	{
-		for (int rows = 0; rows < stoi(rowsize); ++rows)
+		for (int rows = 0; rows < size.heigth; ++rows)
 		{
 			reverseMtxofpicture[rows][cols] = Mtxofpicture[cols][stoi(colsize) - rows + 1];
 		}
