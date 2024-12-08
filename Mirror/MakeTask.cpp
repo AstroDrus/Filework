@@ -83,7 +83,7 @@ struct PbmSize
 };
 
 
-bool open_files_cheker (const std::ifstream& input, const std::ofstream& output);
+void open_files_cheker (const std::ifstream& input, const std::ofstream& output);
 
 std::unique_ptr<Task> MakeTask(int argc, char** argv)
 {
@@ -144,19 +144,16 @@ std::unique_ptr<Task> MakeTask(int argc, char** argv)
 	}
 }
 
-bool open_files_cheker (const std::ifstream& input, const std::ofstream& output)
+void open_files_cheker (const std::ifstream& input, const std::ofstream& output)
 {
-	
 	if (!input.is_open())
 	{
-		throw "Incorrect source file name!\n";
+		throw std::invalid_argument ("Incorrect source file name!\n");
 	}
 	if (!output.is_open())
 	{
-		throw "Incorrect dest file name!\n";
+		throw std::invalid_argument ("Incorrect dest file name!\n");
 	}
-
-	return 1;
 }
 
 Copy::Copy(const char* path2source, const char* path2dest) :
@@ -187,15 +184,7 @@ void Copy::Exec()
 {
 	std::ifstream input(path2source_);
 	std::ofstream output(path2dest_, std::ios_base::app);
-	try
-	{
-	if (!open_files_cheker(input, output));
-	}
-	catch(const std::string& error)
-	{
-		std::cerr << error;
-	}
-
+	open_files_cheker(input, output);
 	// перенос данных
 	for (std::string line; std::getline(input, line); )
 	{
@@ -207,15 +196,7 @@ void VerticalMirror::Exec()
 {
 	std::ifstream input(path2source_);
 	std::ofstream output(path2dest_, std::ios_base::app);
-	try
-	{
-	if (!open_files_cheker(input, output));
-	}
-	catch(const std::string& error)
-	{
-		std::cerr << error;
-	}
-
+	open_files_cheker(input, output);
 	int counter = 0;
 	// перенос данных и отзеркаливание   
 	for (std::string line; std::getline(input, line); )
@@ -237,15 +218,7 @@ void HorizontalMirror::Exec()
 {
 	std::ifstream input(path2source_);
 	std::ofstream output(path2dest_, std::ios_base::app);
-	try
-	{
-	if (!open_files_cheker(input, output));
-	}
-	catch(const std::string& error)
-	{
-		std::cerr << error;
-	}
-
+	open_files_cheker(input, output);
 	std::vector <std::string> picture;
 	int counter = 0;
 	std::string cols;
@@ -288,14 +261,7 @@ void Rotate::Exec() // картинка должна быть квадратно
 	PbmSize size;
 	std::ifstream input(path2source_);
 	std::ofstream output(path2dest_, std::ios_base::app);
-	try
-	{
-	if (!open_files_cheker(input, output));
-	}
-	catch(const std::string& error)
-	{
-		std::cerr << error;
-	}
+	open_files_cheker(input, output);
 	std::vector <std::vector<char>> Mtxofpicture;
 	std::string colsize;
 	std::string rowsize;
