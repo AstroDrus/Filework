@@ -55,13 +55,14 @@ int main(int argc, char** argv) // 8 arguments
                                 // 4) model of -g res; 5) model of -r res;
                                 // 6) model of -c res.
 {
-    const std::string ProgrammName = "Mirror ";
+    const std::string ProgrammName = "./Mirror ";
     std::string Flag;
     std::cin >> Flag;
     Flag += " ";
     const std::string FromFile = argv[1];
     const std::string ToFile = argv[2];
-    const std::string TerminalPath = ProgrammName + Flag + FromFile + " " + ToFile;
+    const std::string TerminalPath = ProgrammName + " " + Flag + " " + FromFile + " " + ToFile;
+    std::cout << TerminalPath << std::endl;
         switch (Flag[1])
         {
 			case 'v':

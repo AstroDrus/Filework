@@ -1,1 +1,1 @@
-~/Filework/Mirror/Test/example.exe_file.pbm ~/Filework/Mirror/Test/Result_exe_file.pbm ~/Filework/Mirror/Test/Standart_V_Mirror.pbm ~/Filework/Mirror/Test/Standart_H_Mirror.pbm ~/Filework/Mirror/Test/Standart_Rotate.pbm ~/Filework/Mirror/Test/Standart_Copy.pbm
+~/Filework/Mirror/Test/example.exe_file.bpm ~/Filework/Mirror/Test/Result_exe_file.bpm ~/Filework/Mirror/Test/Standart_V_Mirror.bpm ~/Filework/Mirror/Test/Standart_H_Mirror.bpm ~/Filework/Mirror/Test/Standart_Rotate.bpm ~/Filework/Mirror/Test/Standart_Copy.bpm
