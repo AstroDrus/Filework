@@ -55,10 +55,9 @@ int main(int argc, char** argv) // 8 arguments
                                 // 4) model of -g res; 5) model of -r res;
                                 // 6) model of -c res.
 {
-    const std::string ProgrammName = "./Mirror ";
+    const std::string ProgrammName = "./Mirror.exe";
     std::string Flag;
     std::cin >> Flag;
-    Flag += " ";
     const std::string FromFile = argv[1];
     const std::string ToFile = argv[2];
     const std::string TerminalPath = ProgrammName + " " + Flag + " " + FromFile + " " + ToFile;
@@ -70,10 +69,12 @@ int main(int argc, char** argv) // 8 arguments
                 if ( IsSame(argv[2], argv[3]) )
                 {
                     std::cout << "success" << std::endl;
+                    std::ofstream(ToFile);
                 }
                 else
                 {
                     std::cout << "unsuccess" << std::endl;
+                    std::ofstream(ToFile);
                 }
 				break;
 
@@ -82,10 +83,12 @@ int main(int argc, char** argv) // 8 arguments
                 if ( IsSame(argv[2], argv[4]) )
                 {
                     std::cout << "success" << std::endl;
+                    std::ofstream(ToFile);
                 }
                 else
                 {
                     std::cout << "unsuccess" << std::endl;
+                    std::ofstream(ToFile);
                 }
 				break;
 
@@ -94,10 +97,12 @@ int main(int argc, char** argv) // 8 arguments
                 if ( IsSame(argv[2], argv[5]) )
                 {
                     std::cout << "success" << std::endl;
+                    std::ofstream(ToFile);
                 }
                 else
                 {
                     std::cout << "unsuccess" << std::endl;
+                    std::ofstream(ToFile);
                 }
 				break;
 
@@ -106,10 +111,12 @@ int main(int argc, char** argv) // 8 arguments
                 if ( IsSame(argv[2], argv[6]) )
                 {
                     std::cout << "success" << std::endl;
+                    std::ofstream(ToFile);
                 }
                 else
                 {
                     std::cout << "unsuccess" << std::endl;
+                    std::ofstream(ToFile);
                 }
 				break;
 
@@ -118,10 +125,12 @@ int main(int argc, char** argv) // 8 arguments
                 if ( IsSame(argv[2], argv[6]) )
                 {
                     std::cout << "success" << std::endl;
+                    std::ofstream(ToFile);
                 }
                 else
                 {
                     std::cout << "unsuccess" << std::endl;
+                    std::ofstream(ToFile);
                 }
 				break;
         }

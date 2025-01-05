@@ -1,0 +1,6 @@
+~/Filework/Mirror/Test/example.exe_file.pbm 
+~/Filework/Mirror/Test/Result_exe_file.pbm 
+~/Filework/Mirror/Test/Standart_V_Mirror.pbm 
+~/Filework/Mirror/Test/Standart_H_Mirror.pbm 
+~/Filework/Mirror/Test/Standart_Rotate.pbm 
+~/Filework/Mirror/Test/Standart_Copy.pbm

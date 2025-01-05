@@ -5,6 +5,7 @@
 
 bool CheckFormat(const std::string& SourceFile)
 {
+	std::cout<< SourceFile << std::endl;
 	const unsigned PBMmaxsize = 65535;
 	std::ifstream input(SourceFile);
 	if (!input.is_open())
@@ -78,7 +79,7 @@ bool CheckFormat(const std::string& SourceFile)
 
 bool CheckExpansion(const std::string& SourceFile)
 {
-	const std::string expectedExtension = ".bpm";
+	const std::string expectedExtension = ".pbm";
 	auto idxLastExtOccur = std::string(SourceFile).rfind(expectedExtension);
 	if (idxLastExtOccur == std::string::npos)
 	{
