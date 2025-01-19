@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 #include "libMP3"
 
 int main(int argc, char ** argv )
@@ -13,13 +14,13 @@ int main(int argc, char ** argv )
     std::ifstream source_file(argv[2], binary);
     try 
     {
-        Check(source_file);
-        ShowTAG(source_file);
+        MP3::ShowTAG(source_file); //todo no void return full Zagalovoc
     }
-    catch( ... )
+    catch( const std::exception& exeption )
     {
-        std::cout << error_message << std::endl;
-    }
+        std::cout << exeption << std::endl;
+    }    
+
 
     return 0;
 }
