@@ -6,6 +6,7 @@ add_executable(Main consumer/main.cpp)
 
 add_library(MP3 SHARED mp3_id3/src/GetHeading.cpp)
 
-#target_link_directories(Main PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_link_directories(Main PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(Main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/mp3_id3)
 
 target_link_libraries(Main MP3)

@@ -5,13 +5,6 @@
 #include <string>
 #include "libMP3.h"
 
-class MP3_Header
-{
-public:  
-    // massiv for the result of this func (C-style -> std::string)
-    std::string tag_;  
-};
-
 
 int main(int argc, char ** argv )
 {
@@ -27,11 +20,7 @@ int main(int argc, char ** argv )
 
     try 
     {
-        MP3_Header MP3_h;
-        MP3_h.tag_ = MP3::GetHeading(source_file);
-        std::cout << MP3_h.tag_ << std::endl;
-        //give to the main.cpp the head of the MP3_file
-        //Head_file << MP3_h.tag_;    
+        std::cout << MP3::GetHeading(source_file) << std::endl;
     }
     catch( const std::exception& exeption )
     {
